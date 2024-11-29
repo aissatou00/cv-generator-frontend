@@ -3,9 +3,12 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileAlt, faShareAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../context/AuthContext.jsx";
+import CustomNavbar from "../components/Navbar.jsx"; // Import du composant Navbar
 
 const HomePage = () => {
     const [publicCvs, setPublicCvs] = useState([]);
+    const [filteredCvs, setFilteredCvs] = useState([]); // Pour les résultats filtrés
+    const [searchTerm, setSearchTerm] = useState(""); // Input de recherche
     const [error, setError] = useState(null);
     const { user } = useContext(AuthContext);
 
@@ -14,6 +17,7 @@ const HomePage = () => {
             try {
                 const response = await axios.get("https://node-project-u3nz.onrender.com/api/cv");
                 setPublicCvs(response.data);
+                setFilteredCvs(response.data); // Afficher tous les CVs par défaut
             } catch (error) {
                 console.error("Erreur lors de la récupération des CV publics :", error);
                 setError("Impossible de charger les CV publics. Veuillez réessayer plus tard.");
@@ -22,6 +26,17 @@ const HomePage = () => {
 
         fetchPublicCvs();
     }, []);
+
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+        const filtered = publicCvs.filter((cv) =>
+            `${cv.personalInfo?.nom || ""} ${cv.personalInfo?.prenom || ""}`
+                .toLowerCase()
+                .includes(term)
+        );
+        setFilteredCvs(filtered);
+    };
 
     const styles = {
         container: {
@@ -85,66 +100,76 @@ const HomePage = () => {
             textAlign: "center",
             padding: "2rem 1.5rem",
         },
+        searchInput: {
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            border: "1px solid #ddd",
+            width: "100%",
+            maxWidth: "500px",
+            fontSize: "1rem",
+            margin: "0 auto",
+            display: "block",
+        },
     };
 
     return (
         <div style={styles.container}>
             {/* Hero Section */}
-           <header style={styles.hero}>
-    <h1 style={styles.heroTitle}>Bienvenue sur CV TESTER</h1>
-    <p style={styles.heroText}>
-        Générez, modifiez et soumettez vos CV en toute simplicité.
-    </p>
+            <header style={styles.hero}>
+                <h1 style={styles.heroTitle}>Bienvenue sur CV Tester</h1>
+                <p style={styles.heroText}>
+                    Générez, modifiez et soumettez vos CV en toute simplicité.
+                </p>
 
-    {user ? (
-        <p style={styles.heroText}>
-            Bienvenue,{" "}
-            <a
-                href="#cv"
-                style={{
-                    color: "#84a65a",
-                    textDecoration: "none",
-                    fontWeight: "bold",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#1e40af")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#84a65a")}
-            >
-                regardez nos CVs
-            </a>{" "}
-            !
-        </p>
-    ) : (
-        <div>
-            <a
-                href="/register"
-                style={{
-                    ...styles.heroButton,
-                    marginRight: "10px",
-                }}
-                onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#e2e8f0")
-                }
-                onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#ffffff")
-                }
-            >
-                Créer un compte
-            </a>
-            <a
-                href="#cv"
-                style={styles.heroButton}
-                onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#e2e8f0")
-                }
-                onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#ffffff")
-                }
-            >
-                Voir les CVs
-            </a>
-        </div>
-    )}
-</header>
+                {user ? (
+                    <p style={styles.heroText}>
+                        Bienvenue,{" "}
+                        <a
+                            href="#cv"
+                            style={{
+                                color: "#84a65a",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "#1e40af")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "#84a65a")}
+                        >
+                            regardez nos CVs
+                        </a>{" "}
+                        !
+                    </p>
+                ) : (
+                    <div>
+                        <a
+                            href="/register"
+                            style={{
+                                ...styles.heroButton,
+                                marginRight: "10px",
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor = "#e2e8f0")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = "#ffffff")
+                            }
+                        >
+                            Créer un compte
+                        </a>
+                        <a
+                            href="#cv"
+                            style={styles.heroButton}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor = "#e2e8f0")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = "#ffffff")
+                            }
+                        >
+                            Voir les CVs
+                        </a>
+                    </div>
+                )}
+            </header>
 
             {/* Features Section */}
             <section style={styles.section}>
@@ -158,7 +183,7 @@ const HomePage = () => {
                     <div style={styles.card}>
                         <FontAwesomeIcon icon={faShareAlt} style={styles.icon} />
                         <h3>Partager vos CV</h3>
-                        <p>Rendez vos CV publics pour recevoir des conseilles .</p>
+                        <p>Rendez vos CV publics pour recevoir des conseils.</p>
                     </div>
                     <div style={styles.card}>
                         <FontAwesomeIcon icon={faEdit} style={styles.icon} />
@@ -168,16 +193,27 @@ const HomePage = () => {
                 </div>
             </section>
 
+            {/* Search Bar */}
+            <section style={{ ...styles.section, paddingBottom: "2rem" }}>
+                <input
+                    type="text"
+                    placeholder="Rechercher par nom..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    style={styles.searchInput}
+                />
+            </section>
+
             {/* Public CVs Section */}
             <section id="cv" style={styles.section}>
                 <h2 style={styles.sectionTitle}>CV publics</h2>
                 {error ? (
                     <p style={{ color: "#e53e3e" }}>{error}</p>
-                ) : publicCvs.length === 0 ? (
+                ) : filteredCvs.length === 0 ? (
                     <p style={{ color: "#4a5568" }}>Aucun CV public disponible pour le moment.</p>
                 ) : (
                     <div style={styles.grid}>
-                        {publicCvs.map((cv) => (
+                        {filteredCvs.map((cv) => (
                             <div
                                 key={cv._id}
                                 style={styles.card}
@@ -190,9 +226,10 @@ const HomePage = () => {
                                     e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
                                 }}
                             >
-                                {/* Section Image */}
                                 <img
-                                    src={ "https://img.freepik.com/psd-gratuit/illustration-3d-avatar-ligne_23-2151303097.jpg?t=st=1732893433~exp=1732897033~hmac=bec2d9338fb67bc734b021a974c040c8c78a9e5353ce6e14233b5153357c2d00&w=1060"}
+                                    src={
+                                        "https://img.freepik.com/psd-gratuit/illustration-3d-avatar-ligne_23-2151303097.jpg"
+                                    }
                                     alt={`${cv.personalInfo?.nom || "Nom non spécifié"} ${
                                         cv.personalInfo?.prenom || "Prénom non spécifié"
                                     }`}
@@ -207,8 +244,6 @@ const HomePage = () => {
                                         margin: "0 auto",
                                     }}
                                 />
-
-                                {/* Section Informations */}
                                 <div style={{ textAlign: "center" }}>
                                     <h3 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#2563eb" }}>
                                         {cv.personalInfo?.nom || "Nom non spécifié"}{" "}
@@ -218,8 +253,6 @@ const HomePage = () => {
                                         {cv.personalInfo?.description || "Profession non spécifiée"}
                                     </p>
                                 </div>
-
-                                {/* Bouton Voir Plus */}
                                 <a
                                     href={`/cv/${cv._id}`}
                                     style={{
@@ -237,7 +270,6 @@ const HomePage = () => {
                         ))}
                     </div>
                 )}
-
             </section>
 
             {/* Footer */}
