@@ -95,6 +95,7 @@ const HomePage = () => {
                 <p style={styles.heroText}>
                     Générez, modifiez et soumettez vos CV en toute simplicité.
                 </p>
+            
 
                 {user ? (
                     <p style={styles.heroText}>Bienvenue,
@@ -121,6 +122,14 @@ const HomePage = () => {
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
             >
                         Créer un compte
+                    </a>
+             <a
+                    href="#cv"
+                    style={styles.heroButton}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e2e8f0")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
+            >
+                       Voir les CVs
                     </a>
                 )}
             </header>
