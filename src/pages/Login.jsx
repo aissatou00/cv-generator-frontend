@@ -21,7 +21,7 @@ const LoginPage = () => {
             // Appeler la fonction login du contexte
             login({ token: response.data.token, user: response.data.user });
 
-            navigate("/dashboard"); // Rediriger après connexion
+            navigate("/"); // Rediriger après connexion
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
         }

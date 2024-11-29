@@ -13,7 +13,7 @@ const RegisterPage = () => {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.username]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value }); // Utiliser e.target.name
     };
 
     const handleSubmit = async (e) => {
@@ -49,7 +49,7 @@ const RegisterPage = () => {
                     </label>
                     <input
                         type="text"
-                        name="name"
+                        name="username" // Mettez "username" pour correspondre à l'objet formData
                         placeholder="Enter your name"
                         value={formData.username}
                         onChange={handleChange}
@@ -88,7 +88,7 @@ const RegisterPage = () => {
                     </label>
                     <input
                         type="password"
-                        name="confirmPassword"
+                        name="confirmPassword" // Corrigé ici
                         placeholder="Confirm your password"
                         value={formData.confirmPassword}
                         onChange={handleChange}

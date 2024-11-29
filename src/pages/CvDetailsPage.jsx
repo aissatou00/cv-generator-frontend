@@ -10,14 +10,22 @@ const CvDetailsPage = () => {
     const [recommendations, setRecommendations] = useState([]);
     const [newRecommendation, setNewRecommendation] = useState("");
     const [error, setError] = useState(null);
+    const [recommendationError, setRecommendationError] = useState(null);
 
     useEffect(() => {
-        const fetchCvAndRecommendations = async () => {
+        const fetchCv = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const cvResponse = await axios.get(`https://node-project-u3nz.onrender.com/api/cv/${id}`);
                 setCv(cvResponse.data);
+            } catch (error) {
+                console.error("Erreur lors de la récupération du CV :", error);
+                setError("Impossible de charger ce CV. Veuillez réessayer plus tard.");
+            }
+        };
 
+        const fetchRecommendations = async () => {
+            try {
+                const token = localStorage.getItem("token");
                 const recommendationsResponse = await axios.get(
                     `https://node-project-u3nz.onrender.com/api/recommendations/${id}`,
                     {
@@ -28,17 +36,18 @@ const CvDetailsPage = () => {
                 );
                 setRecommendations(recommendationsResponse.data);
             } catch (error) {
-                console.error("Erreur lors de la récupération des données :", error);
-                setError(
+                console.error("Erreur lors de la récupération des recommandations :", error);
+                setRecommendationError(
                     error.response?.status === 401
-                        ? "Vous devez être connecté pour voir les recommandations."
-                        : "Impossible de charger les données."
+                        ? "Connectez-vous pour voir et ajouter des recommandations."
+                        : "Impossible de charger les recommandations."
                 );
             }
         };
 
-        fetchCvAndRecommendations();
-    }, [id]);
+        fetchCv();
+        if (user) fetchRecommendations();
+    }, [id, user]);
 
     const handleAddRecommendation = async () => {
         if (!newRecommendation.trim()) return;
@@ -57,7 +66,7 @@ const CvDetailsPage = () => {
             setNewRecommendation("");
         } catch (error) {
             console.error("Erreur lors de l'ajout de la recommandation :", error);
-            setError("Impossible d'ajouter la recommandation.");
+            setRecommendationError("Impossible d'ajouter la recommandation.");
         }
     };
 
@@ -171,9 +180,9 @@ const CvDetailsPage = () => {
                 {/* Header Section */}
                 <div style={styles.header}>
                     <img
-                        src={ "https://img.freepik.com/psd-gratuit/illustration-3d-avatar-ligne_23-2151303097.jpg?t=st=1732893433~exp=1732897033~hmac=bec2d9338fb67bc734b021a974c040c8c78a9e5353ce6e14233b5153357c2d00&w=1060"} // Image dynamique ou par défaut
+                        src="https://img.freepik.com/psd-gratuit/illustration-3d-avatar-ligne_23-2151303097.jpg"
                         alt={`${cv.personalInfo?.nom} ${cv.personalInfo?.prenom}`}
-                        style={styles.avatar} // Applique les styles définis
+                        style={styles.avatar}
                     />
                     <div>
                         <h1 style={styles.name}>
@@ -184,17 +193,6 @@ const CvDetailsPage = () => {
                         </p>
                     </div>
                 </div>
-
-                {/* Contact Section
-                <div style={styles.section}>
-                    <h2 style={styles.sectionTitle}>Contact</h2>
-                    <p>
-                        <strong>Email :</strong> {cv.contact?.email || "Non spécifié"}
-                    </p>
-                    <p>
-                        <strong>Téléphone :</strong> {cv.contact?.phone || "Non spécifié"}
-                    </p>
-                </div> */}
 
                 {/* Education Section */}
                 <div style={styles.section}>
@@ -233,31 +231,37 @@ const CvDetailsPage = () => {
 
             <div style={styles.recommendations}>
                 <h2 style={styles.sectionTitle}>Recommandations</h2>
-                {recommendations.length === 0 ? (
-                    <p>Aucune recommandation disponible pour ce CV.</p>
-                ) : (
-                    recommendations.map((rec) => (
-                        <div key={rec._id} style={styles.recommendationCard}>
-                            <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                                {rec.userId.username}
-                            </p>
-                            <p>{rec.message}</p>
-                        </div>
-                    ))
-                )}
+                {user ? (
+                    <>
+                        {recommendations.length === 0 ? (
+                            <p>Aucune recommandation disponible pour ce CV.</p>
+                        ) : (
+                            recommendations.map((rec) => (
+                                <div key={rec._id} style={styles.recommendationCard}>
+                                    <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+                                        {rec.userId.username}
+                                    </p>
+                                    <p>{rec.message}</p>
+                                </div>
+                            ))
+                        )}
 
-                {user && (
-                    <div style={styles.recommendationForm}>
-                        <textarea
-                            style={styles.textarea}
-                            value={newRecommendation}
-                            onChange={(e) => setNewRecommendation(e.target.value)}
-                            placeholder="Ajoutez une recommandation..."
-                        ></textarea>
-                        <button style={styles.button} onClick={handleAddRecommendation}>
-                            Ajouter une recommandation
-                        </button>
-                    </div>
+                        <div style={styles.recommendationForm}>
+                            <textarea
+                                style={styles.textarea}
+                                value={newRecommendation}
+                                onChange={(e) => setNewRecommendation(e.target.value)}
+                                placeholder="Ajoutez une recommandation..."
+                            ></textarea>
+                            <button style={styles.button} onClick={handleAddRecommendation}>
+                                Ajouter une recommandation
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <p style={{ color: "#4a5568" }}>
+                        Connectez-vous pour voir ou ajouter des recommandations.
+                    </p>
                 )}
             </div>
         </div>

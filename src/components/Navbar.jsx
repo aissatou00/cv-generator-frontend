@@ -87,7 +87,7 @@ const CustomNavbar = () => {
 
                 {/* Navigation Links */}
                 <div style={styles.navLinks}>
-                    <Link to="/home" style={styles.link}>
+                    <Link to="/" style={styles.link}>
                         Home
                     </Link>
                     {user ? (
