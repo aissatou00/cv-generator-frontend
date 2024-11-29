@@ -5,7 +5,7 @@ import '../styles/cvform.css';
 
 function CVForm() {
     const navigate = useNavigate();
-    const { id } = useParams(); // Si c'est une modification de CV existant
+    const { id } = useParams(); 
     const [cvData, setCvData] = useState({
         personalInfo: {
             nom: '',
@@ -17,7 +17,6 @@ function CVForm() {
         visibility: true,
     });
 
-    // Si c'est une modification, charger les données du CV existant
     useEffect(() => {
         if (id) {
             const fetchCV = async () => {
@@ -29,7 +28,6 @@ function CVForm() {
         }
     }, [id]);
 
-    // Fonction pour gérer les changements dans le formulaire
     const handleChange = (e) => {
         const { name, value } = e.target;
         const [section, key] = name.split('.');
@@ -43,7 +41,7 @@ function CVForm() {
         }));
     };
 
-    // Ajouter une nouvelle entrée dans les sections "education" ou "experience"
+    
     const addField = (section) => {
         setCvData((prevData) => ({
             ...prevData,
@@ -51,10 +49,9 @@ function CVForm() {
         }));
     };
 
-    // Soumettre le formulaire
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token'); // Assurez-vous que le token JWT est dans le localStorage
+        const token = localStorage.getItem('token'); 
         const method = id ? 'PUT' : 'POST';
         const url = id ? `https://node-project-u3nz.onrender.com/api/cv/${id}` : 'https://node-project-u3nz.onrender.com/api/cv';
 

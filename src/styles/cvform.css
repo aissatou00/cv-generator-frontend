@@ -1,0 +1,73 @@
+.cv-form-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cv-form-container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.cv-form-container form {
+    display: grid;
+    gap: 15px;
+}
+
+.cv-form-container form div {
+    display: flex;
+    flex-direction: column;
+}
+
+.cv-form-container form label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.cv-form-container form input,
+.cv-form-container form textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.cv-form-container form input:focus,
+.cv-form-container form textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.cv-form-container .add-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cv-form-container .add-btn:hover {
+    background-color: #218838;
+}
+
+.cv-form-container .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cv-form-container .submit-btn:hover {
+    background-color: #0056b3;
+}

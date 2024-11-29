@@ -1,9 +1,7 @@
 import React, { createContext, useState } from 'react';
 
-// Créez un contexte pour l'authentification
 const AuthContext = createContext(null);
 
-// Votre composant AuthProvider
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(localStorage.getItem('user') ?? null);
     const [token, setToken] = useState(localStorage.getItem('token') ?? null);

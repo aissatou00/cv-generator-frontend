@@ -2,7 +2,9 @@ import React from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import axios from 'axios';
 import { toast } from 'react-toastify';
+import '../styles/register.css';
 
 function Register() {
     const navigate = useNavigate();
@@ -10,79 +12,88 @@ function Register() {
     return (
         <Formik
             initialValues={{
-                username: '',
+                name: '', 
                 email: '',
                 password: '',
-                confirmPassword: ''
             }}
             validationSchema={Yup.object({
-                username: Yup.string().max(10, 'Must be 10 characters or less').required('Required'),
-                email: Yup.string().email('Invalid email address').max(50, 'Must be 50 characters or less').required('Required'),
-                password: Yup.string().min(6, 'Must be at least 6 characters').required('Required'),
-                confirmPassword: Yup.string()
-                    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-                    .required('Required')
+                name: Yup.string().required('Name is required'),
+                email: Yup.string().email('Invalid email address').required('Email is required'),
+                password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
             })}
             onSubmit={async (values) => {
                 try {
-                    const response = await fetch(
-                        'http://node-project-u3nz.onrender.com/api/auth/register',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(values),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    );
+                    const payload = {
+                        username: values.name, 
+                        email: values.email,
+                        password: values.password,
+                    };
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        toast.error(errorData.message || 'Echec de l\'inscription.');
-                        return;
+                    const response = await axios.post('http://127.0.0.1:5000/api/auth/register', payload, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.data) {
+                        toast.success('Le compte a bien été créé !');
+                        navigate('/login'); 
                     }
-
-                    toast.success('Le compte a bien été créé !');
-                    navigate('/login');  // Rediriger vers la page de connexion après une inscription réussie
                 } catch (error) {
                     console.error('Failed to register:', error);
-                    toast.error('Echec de l\'inscription. Veuillez réessayer.');
+                    toast.error(error.response?.data?.message || 'Une erreur s\'est produite. Veuillez réessayer.');
                 }
             }}
         >
             <Form>
-                <div className="container mt-5">
-                    <div className="row justify-content-center">
-                        <div className="col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <h2 className="text-center mb-4">Register</h2>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="username">Username:</label>
-                                        <Field className="form-control" type="text" name="username" autoComplete="username" />
-                                        <ErrorMessage style={{ color: 'red' }} name="username" component="div" />
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="email">Email:</label>
-                                        <Field className="form-control" type="email" name="email" autoComplete="email" />
-                                        <ErrorMessage style={{ color: 'red' }} name="email" component="div" />
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="password">Password:</label>
-                                        <Field className="form-control" type="password" name="password" autoComplete="new-password" />
-                                        <ErrorMessage style={{ color: 'red' }} name="password" component="div" />
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="confirmPassword">Confirm Password:</label>
-                                        <Field className="form-control" type="password" name="confirmPassword" autoComplete="new-password" />
-                                        <ErrorMessage style={{ color: 'red' }} name="confirmPassword" component="div" />
-                                    </div>
-                                    <button className="btn btn-primary btn-block" type="submit">
-                                        S'inscrire
-                                    </button>
-                                </div>
-                            </div>
+                <div className="flex justify-center items-center h-screen bg-gray-100">
+                    <div className="bg-white shadow-lg rounded-lg p-8 w-96">
+                        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Name</label>
+                            <Field
+                                type="text"
+                                name="name"
+                                placeholder="Enter your name"
+                                className="border rounded-lg px-4 py-2 w-full"
+                            />
+                            <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
                         </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <Field
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                className="border rounded-lg px-4 py-2 w-full"
+                            />
+                            <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Password</label>
+                            <Field
+                                type="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                className="border rounded-lg px-4 py-2 w-full"
+                            />
+                            <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white py-2 px-4 rounded-lg w-full"
+                        >
+                            Register
+                        </button>
+
+                        <p className="text-sm text-gray-600 mt-4 text-center">
+                            Already have an account?{" "}
+                            <a href="/login" className="text-blue-500">Login</a>
+                        </p>
                     </div>
                 </div>
             </Form>

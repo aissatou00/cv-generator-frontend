@@ -4,45 +4,38 @@ import '../styles/dashboard.css';
 
 
 function Dashboard() {
-    const [userCV, setUserCV] = useState(null); // Stocke le CV de l'utilisateur
-    const [error, setError] = useState(null); // Gère les erreurs de requête
-    const [loading, setLoading] = useState(true); // Gère l'état de chargement
+    const [userCV, setUserCV] = useState(null); 
+    const [error, setError] = useState(null); 
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         const fetchUserCV = async () => {
             try {
-                const response = await fetch('https://node-project-u3nz.onrender.com/api/cv/mine', {
+                const response = await fetch('http://127.0.0.1:5000/api/cv/mine', {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Envoi du token d'authentification
-                        'Content-Type': 'application/json'
-                    }
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
                 });
-
+    
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`Erreur HTTP : ${response.status}`);
                 }
-
+    
                 const data = await response.json();
-                setUserCV(data); // Met à jour les données du CV de l'utilisateur
+                setUserCV(data); 
             } catch (err) {
                 console.error('Failed to fetch user CV:', err);
                 setError('Impossible de charger votre CV. Veuillez réessayer.');
             } finally {
-                setLoading(false); // Arrête le chargement
+                setLoading(false); 
             }
         };
-
+    
         fetchUserCV();
     }, []);
-
-    if (loading) {
-        return <p>Chargement en cours...</p>;
-    }
-
-    if (error) {
-        return <p className="text-danger">{error}</p>;
-    }
+    
 
     return (
         <div>
@@ -80,22 +73,22 @@ function Dashboard() {
                                 className="btn btn-danger ms-2"
                                 onClick={async () => {
                                     try {
-                                        const response = await fetch('https://node-project-u3nz.onrender.com/api/cv/mine', {
+                                        const response = await fetch('http://127.0.0.1:5000/api/cv/mine', {
                                             method: 'DELETE',
                                             headers: {
                                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                                             }
                                         });
-
+    
                                         if (!response.ok) {
                                             throw new Error(`HTTP error! Status: ${response.status}`);
                                         }
-
+    
                                         setUserCV(null);
-                                        alert('CV supprimé avec succès !');
+                                        toast.success('CV supprimé avec succès !');
                                     } catch (error) {
                                         console.error('Erreur lors de la suppression :', error);
-                                        alert('Échec de la suppression du CV.');
+                                        toast.error('Échec de la suppression du CV.');
                                     }
                                 }}
                             >
@@ -104,11 +97,17 @@ function Dashboard() {
                         </div>
                     </div>
                 ) : (
-                    <p>Vous n'avez pas encore de CV. <Link to="/create-cv">Créer un CV</Link></p>
+                    <div>
+                        <p>Vous n'avez pas encore de CV.</p>
+                        <Link to="/create-cv" className="btn btn-success">
+                            Créer un CV
+                        </Link>
+                    </div>
                 )}
             </div>
         </div>
     );
+    
 }
 
 export default Dashboard;
