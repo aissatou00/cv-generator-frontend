@@ -1,58 +1,39 @@
 import { useState, useEffect } from "react";
 import CvEditor from "../components/CvEditor";
-//import UserInfo from "../components/UserInfo";
 import axios from "axios";
-import './../index.css'
 
 const DashboardPage = () => {
-    const [activeTab, setActiveTab] = useState("create");
-    //const [userInfo, setUserInfo] = useState(null); // Données utilisateur
-    const [currentCv, setCurrentCv] = useState(null); // CV à modifier ou créer
+    const [activeTab, setActiveTab] = useState("create"); // Onglet actif : création ou gestion
+    const [cvs, setCvs] = useState([]); // Liste des CVs
+    const [editingCv, setEditingCv] = useState(null); // CV en cours de modification
+    const [loading, setLoading] = useState(true); // État de chargement
 
-   useEffect(() => {
-     {/*     // Charger les infos utilisateur
-        const fetchUserInfo = async () => {
+    useEffect(() => {
+        // Récupérer les CVs de l'utilisateur connecté
+        const fetchUserCvs = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:3000/api/auth/protected", {
+                const response = await axios.get("https://node-project-u3nz.onrender.com/api/cv/user", {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 });
-                setUserInfo(response.data.user);
+                setCvs(response.data);
             } catch (error) {
-                console.error("Erreur lors de la récupération des infos utilisateur :", error);
-            }
-        };*/}
-
-
-
-        // Charger le CV utilisateur si existant
-        const fetchUserCv = async () => {
-            try {
-                const response = await axios.get("http://127.0.0.1:3000/api/cv/user", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-                if (response.data && response.data.length > 0) {
-                    setCurrentCv(response.data[0]); // Supposons qu'un utilisateur n'a qu'un seul CV
-                }
-            } catch (error) {
-                console.error("Erreur lors de la récupération des CV :", error);
+                console.error("Erreur lors de la récupération des CVs :", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-       // fetchUserInfo();
-        fetchUserCv();
+        fetchUserCvs();
     }, []);
 
-    // Sauvegarder ou mettre à jour le CV
     const saveCv = async (cvData) => {
         try {
-            if (currentCv) {
+            if (editingCv) {
                 // Modifier un CV existant
                 const response = await axios.put(
-                    `http://127.0.0.1:3000/api/cv/${currentCv._id}`,
+                    `https://node-project-u3nz.onrender.com/api/cv/${editingCv._id}`,
                     cvData,
                     {
                         headers: {
@@ -60,96 +41,190 @@ const DashboardPage = () => {
                         },
                     }
                 );
-                setCurrentCv(response.data); // Mettre à jour localement
+                setCvs((prev) =>
+                    prev.map((cv) => (cv._id === editingCv._id ? response.data : cv))
+                );
+                setEditingCv(null);
             } else {
                 // Créer un nouveau CV
-                const response = await axios.post("http://127.0.0.1:3000/api/cv/create", cvData, {
+                const response = await axios.post("https://node-project-u3nz.onrender.com/api/cv/create", cvData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 });
-                setCurrentCv(response.data); // Mettre à jour localement
+                setCvs((prev) => [...prev, response.data]);
             }
+            setActiveTab("manage");
         } catch (error) {
             console.error("Erreur lors de la sauvegarde du CV :", error);
         }
     };
 
-    {/*  // Sauvegarder les infos utilisateur
-    const saveUserInfo = async (userData) => {
+    const deleteCv = async (cvId) => {
         try {
-            const response = await axios.put("http://127.0.0.1:3000/api/auth/user", userData, {
+            await axios.delete(`https://node-project-u3nz.onrender.com/api/cv/${cvId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-            setUserInfo(response.data); // Mettre à jour localement
+            setCvs((prev) => prev.filter((cv) => cv._id !== cvId));
         } catch (error) {
-            console.error("Erreur lors de la sauvegarde des infos utilisateur :", error);
+            console.error("Erreur lors de la suppression du CV :", error);
         }
     };
-*/}
+
+    const styles = {
+        container: {
+            display: "flex",
+            height: "100vh",
+            backgroundColor: "#f8fafc",
+        },
+        sidebar: {
+            width: "25%",
+            backgroundColor: "#ffffff",
+            padding: "24px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
+        menuTitle: {
+            fontSize: "24px",
+            fontWeight: "bold",
+            marginBottom: "24px",
+            color: "#1f2937",
+        },
+        menuItem: (isActive) => ({
+            width: "100%",
+            textAlign: "left",
+            padding: "12px 16px",
+            borderRadius: "8px",
+            backgroundColor: isActive ? "#3b82f6" : "#e5e7eb",
+            color: isActive ? "#ffffff" : "#1f2937",
+            cursor: "pointer",
+            marginBottom: "16px",
+        }),
+        content: {
+            width: "75%",
+            padding: "24px",
+        },
+        contentBox: {
+            backgroundColor: "#ffffff",
+            padding: "24px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
+        contentTitle: {
+            fontSize: "24px",
+            fontWeight: "bold",
+            marginBottom: "16px",
+            color: "#1f2937",
+        },
+        button: {
+            marginTop: "16px",
+            padding: "12px 16px",
+            backgroundColor: "#3b82f6",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+        },
+    };
+
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div style={styles.container}>
             {/* Menu latéral */}
-            <div className="w-1/4 bg-white p-6 shadow-lg">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Menu</h2>
-                <ul className="space-y-4">
+            <div style={styles.sidebar}>
+                <h2 style={styles.menuTitle}>Menu</h2>
+                <ul>
                     <li>
                         <button
-                            onClick={() => setActiveTab("create")}
-                            className={`w-full text-left px-4 py-2 rounded-lg ${
-                                activeTab === "create" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                            }`}
+                            onClick={() => {
+                                setEditingCv(null);
+                                setActiveTab("create");
+                            }}
+                            style={styles.menuItem(activeTab === "create")}
                         >
                             Créer un CV
                         </button>
                     </li>
                     <li>
                         <button
-                            onClick={() => setActiveTab("edit")}
-                            className={`w-full text-left px-4 py-2 rounded-lg ${
-                                activeTab === "edit" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                            }`}
+                            onClick={() => setActiveTab("manage")}
+                            style={styles.menuItem(activeTab === "manage")}
                         >
-                            Modifier mon CV
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            onClick={() => setActiveTab("info")}
-                            className={`w-full text-left px-4 py-2 rounded-lg ${
-                                activeTab === "info" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                            }`}
-                        >
-                            Mes infos
+                            Gérer mes CVs
                         </button>
                     </li>
                 </ul>
             </div>
 
             {/* Zone de contenu principale */}
-            <div className="w-3/4 p-6">
+            <div style={styles.content}>
+                {loading && <p>Chargement des CVs...</p>}
+
+                {/* Création d'un CV */}
                 {activeTab === "create" && (
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Créer un CV</h2>
+                    <div style={styles.contentBox}>
+                        <h2 style={styles.contentTitle}>Créer un CV</h2>
                         <CvEditor onSave={saveCv} />
                     </div>
                 )}
 
-                {activeTab === "edit" && currentCv && (
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Modifier mon CV</h2>
-                        <CvEditor currentCv={currentCv} onSave={saveCv} />
+                {/* Gestion des CVs */}
+                {activeTab === "manage" && (
+                    <div style={styles.contentBox}>
+                        <h2 style={styles.contentTitle}>Mes CVs</h2>
+                        {cvs.length === 0 ? (
+                            <p>Vous navez pas encore de CV.</p>
+                        ) : (
+                            <div>
+                                {cvs.map((cv) => (
+                                    <div
+                                        key={cv._id}
+                                        style={{
+                                            marginBottom: "16px",
+                                            padding: "16px",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: "8px",
+                                            backgroundColor: "#ffffff",
+                                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                                        }}
+                                    >
+                                        <h3 style={{ marginBottom: "8px" }}>
+                                            {cv.personalInfo.nom} {cv.personalInfo.prenom}
+                                        </h3>
+                                        <p>
+                                            <strong>Description :</strong>{" "}
+                                            {cv.personalInfo.description || "Non spécifiée"}
+                                        </p>
+                                        <button
+                                            onClick={() => {
+                                                setEditingCv(cv);
+                                                setActiveTab("create");
+                                            }}
+                                            style={{
+                                                ...styles.button,
+                                                backgroundColor: "#3b82f6",
+                                                marginRight: "8px",
+                                            }}
+                                        >
+                                            Modifier
+                                        </button>
+                                        <button
+                                            onClick={() => deleteCv(cv._id)}
+                                            style={{
+                                                ...styles.button,
+                                                backgroundColor: "#e53e3e",
+                                            }}
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
-
-                {/*   {activeTab === "info" && userInfo && (
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Mes informations</h2>
-                        <UserInfo user={userInfo} onSave={saveUserInfo} />
-                    </div>
-                )} */}
             </div>
         </div>
     );

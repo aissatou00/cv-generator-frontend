@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
-        name: "",
+        username: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -13,7 +13,7 @@ const RegisterPage = () => {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({ ...formData, [e.target.username]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -24,8 +24,8 @@ const RegisterPage = () => {
         }
 
         try {
-            await axios.post("http:127.0.0.1:3000/api/auth/register", {
-                name: formData.name,
+            await axios.post("https://node-project-u3nz.onrender.com/api/auth/register", {
+                username: formData.username,
                 email: formData.email,
                 password: formData.password,
             });
@@ -51,7 +51,7 @@ const RegisterPage = () => {
                         type="text"
                         name="name"
                         placeholder="Enter your name"
-                        value={formData.name}
+                        value={formData.username}
                         onChange={handleChange}
                         className="border rounded-lg px-4 py-2 w-full"
                     />

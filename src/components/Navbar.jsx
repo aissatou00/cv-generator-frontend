@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,36 +6,112 @@ import { faUser, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 const CustomNavbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const [dropdownVisible, setDropdownVisible] = useState(false); // État pour gérer la visibilité du dropdown
+
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible);
+    };
+
+    const styles = {
+        navbar: {
+            backgroundColor: "#2563eb",
+            color: "#ffffff",
+            padding: "0.5rem 1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
+        container: {
+            maxWidth: "1200px",
+            margin: "0 auto",
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
+        logo: {
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            textDecoration: "none",
+            color: "#ffffff",
+        },
+        navLinks: {
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+        },
+        link: {
+            color: "#ffffff",
+            textDecoration: "none",
+            fontSize: "1rem",
+            cursor: "pointer",
+            transition: "color 0.3s",
+        },
+        dropdown: {
+            position: "relative",
+            cursor: "pointer",
+        },
+        dropdownContent: {
+            position: "absolute",
+            top: "100%",
+            right: "0",
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            borderRadius: "4px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            display: dropdownVisible ? "block" : "none", // Contrôle via l'état
+            minWidth: "150px",
+            zIndex: 1000,
+        },
+        dropdownItem: {
+            padding: "0.5rem 1rem",
+            fontSize: "0.875rem",
+            textAlign: "left",
+            width: "100%",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
+        },
+        dropdownItemHover: {
+            backgroundColor: "#f3f4f6",
+        },
+    };
 
     return (
-        <nav className="bg-blue-600 text-white px-4 py-3 shadow-md">
-            <div className="container mx-auto flex justify-between items-center">
+        <nav style={styles.navbar}>
+            <div style={styles.container}>
                 {/* Logo */}
-                <Link to="/" className="text-2xl font-bold">
-                    CV Generator
+                <Link to="/" style={styles.logo}>
+                    CV TESTER
                 </Link>
 
                 {/* Navigation Links */}
-                <div className="flex space-x-4 items-center">
-                    <Link to="/" className="hover:underline">
+                <div style={styles.navLinks}>
+                    <Link to="/home" style={styles.link}>
                         Home
                     </Link>
                     {user ? (
                         <>
-                            <Link to="/dashboard" className="hover:underline">
+                            <Link to="/dashboard" style={styles.link}>
                                 Dashboard
                             </Link>
-                            <div className="relative group">
-                                <button className="flex items-center space-x-2 hover:underline">
-                                    <FontAwesomeIcon icon={faUser} />
+                            <div style={styles.dropdown}>
+                                <button
+                                    onClick={toggleDropdown} // Toggle le dropdown au clic
+                                    style={styles.link}
+                                >
+                                    <FontAwesomeIcon icon={faUser} />{" "}
                                     <span>{user.name || "User"}</span>
                                 </button>
-                                <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg hidden group-hover:block">
+                                <div style={styles.dropdownContent}>
                                     <button
                                         onClick={logout}
-                                        className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
+                                        style={styles.dropdownItem}
                                     >
-                                        <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+                                        <FontAwesomeIcon
+                                            icon={faSignOutAlt}
+                                            style={{ marginRight: "8px" }}
+                                        />
                                         Logout
                                     </button>
                                 </div>
@@ -43,10 +119,10 @@ const CustomNavbar = () => {
                         </>
                     ) : (
                         <>
-                            <Link to="/login" className="hover:underline">
+                            <Link to="/login" style={styles.link}>
                                 Login
                             </Link>
-                            <Link to="/register" className="hover:underline">
+                            <Link to="/register" style={styles.link}>
                                 Register
                             </Link>
                         </>

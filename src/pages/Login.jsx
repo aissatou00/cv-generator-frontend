@@ -1,11 +1,13 @@
-import  { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // Importer login du contexte
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,10 +16,12 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://127.0.0.1:3000/api/auth/login", formData);
-            localStorage.setItem("token", response.data.token);
-            console.log(response.data.token)// Save JWT token
-            navigate("/dashboard"); // Redirect to dashboard
+            const response = await axios.post("https://node-project-u3nz.onrender.com/api/auth/login", formData);
+
+            // Appeler la fonction login du contexte
+            login({ token: response.data.token, user: response.data.user });
+
+            navigate("/dashboard"); // Rediriger après connexion
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
         }
