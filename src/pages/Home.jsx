@@ -90,49 +90,61 @@ const HomePage = () => {
     return (
         <div style={styles.container}>
             {/* Hero Section */}
-            <header style={styles.hero}>
-                <h1 style={styles.heroTitle}>Bienvenue sur CV TESTER</h1>
-                <p style={styles.heroText}>
-                    Générez, modifiez et soumettez vos CV en toute simplicité.
-                </p>
-            
+           <header style={styles.hero}>
+    <h1 style={styles.heroTitle}>Bienvenue sur CV TESTER</h1>
+    <p style={styles.heroText}>
+        Générez, modifiez et soumettez vos CV en toute simplicité.
+    </p>
 
-                {user ? (
-                    <p style={styles.heroText}>Bienvenue,
-                        <a
-                            href="#cv"
-                            style={{
-                                color: "#84a65a",
-                                textDecoration: "none",
-                                fontWeight: "bold",
-
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = "#1e40af")}
-                            onMouseLeave={(e) => (e.currentTarget.style.color = "#84a65a")}
-                        >
-                            regardez nos CVs
-                        </a>{" "}
-                        !
-                    </p>
-                    ) : (
-                    <a
-                    href="/register"
-                    style={styles.heroButton}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e2e8f0")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
+    {user ? (
+        <p style={styles.heroText}>
+            Bienvenue,{" "}
+            <a
+                href="#cv"
+                style={{
+                    color: "#84a65a",
+                    textDecoration: "none",
+                    fontWeight: "bold",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#1e40af")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#84a65a")}
             >
-                        Créer un compte
-                    </a>
-             <a
-                    href="#cv"
-                    style={styles.heroButton}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e2e8f0")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
+                regardez nos CVs
+            </a>{" "}
+            !
+        </p>
+    ) : (
+        <div>
+            <a
+                href="/register"
+                style={{
+                    ...styles.heroButton,
+                    marginRight: "10px",
+                }}
+                onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#e2e8f0")
+                }
+                onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#ffffff")
+                }
             >
-                       Voir les CVs
-                    </a>
-                )}
-            </header>
+                Créer un compte
+            </a>
+            <a
+                href="#cv"
+                style={styles.heroButton}
+                onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#e2e8f0")
+                }
+                onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#ffffff")
+                }
+            >
+                Voir les CVs
+            </a>
+        </div>
+    )}
+</header>
 
             {/* Features Section */}
             <section style={styles.section}>
