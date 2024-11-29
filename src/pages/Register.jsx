@@ -28,7 +28,7 @@ function Register() {
             onSubmit={async (values) => {
                 try {
                     const response = await fetch(
-                        'http://node-project-u3nz.onrender.com/api/auth/register',
+                        'https://node-project-u3nz.onrender.com/api/auth/register',
                         {
                             method: 'POST',
                             body: JSON.stringify(values),

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -16,13 +16,13 @@ function Login() {
                 password: ''
             }}
             validationSchema={Yup.object({
-                email: Yup.string().email().max(20, 'Must be 20 characters or less').required('Required'),
-                password: Yup.string().max(20, 'Must be 20 characters or less').required('Required')
+                email: Yup.string().email().max(30, 'Must be 20 characters or less').required('Required'),
+                password: Yup.string().max(30, 'Must be 20 characters or less').required('Required')
             })}
             onSubmit={async (values) => {
                 try {
                     const response = await fetch(
-                        'http://node-project-u3nz.onrender.com/api/auth/login',
+                        'https://node-project-u3nz.onrender.com/api/auth/login',
                         {
                             method: 'POST',
                             body: JSON.stringify(values),

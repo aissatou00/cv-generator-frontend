@@ -1,29 +1,28 @@
-import React from 'react';
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
-import classNames from 'classnames';
-import {Route, Routes} from "react-router-dom";
+import {Route, Router, Routes} from "react-router-dom";
 import Register from "./pages/Register.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from "./pages/Login.jsx";
+import CustomNavbar from "./components/Navbar.jsx";
 
 
 function App() {
+    return (
+        <div className="container">
+            <div className="navbar">
+                <CustomNavbar />
+            </div>
 
-  return (
-      <>
-          <div className="p-3" >
-              <Routes>
-               <Route path="/register" element={<Register/>}/>
-               <Route path="/login" element={<Login/>}/>
-              </Routes>
-          </div>
-
-
-      </>
-  )
+            <div className="content">
+                <Routes>
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                </Routes>
+            </div>
+        </div>
+    );
 }
 
-export default App
+export default App;
+
