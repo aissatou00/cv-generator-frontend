@@ -12,7 +12,6 @@ import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
 function App() {
     return (
         <AuthProvider>
-
                 <CustomNavbar />
                 <div className="content">
                     <Routes>
@@ -23,7 +22,6 @@ function App() {
                         <Route path="/cv/:id" element={<CvDetailsPage />} />
                     </Routes>
                 </div>
-
         </AuthProvider>
     );
 }
