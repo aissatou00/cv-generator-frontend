@@ -1,75 +1,81 @@
-import { useContext } from 'react';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useNavigate } from 'react-router-dom';
-import * as Yup from 'yup';
-import { AuthContext } from '../context/AuthContext.jsx';
-import { toast } from 'react-toastify';
+import { useState, useContext } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-function Login() {
+const LoginPage = () => {
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
+    const { login } = useContext(AuthContext); // Importer login du contexte
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("https://node-project-u3nz.onrender.com/api/auth/login", formData);
+
+            // Appeler la fonction login du contexte
+            login({ token: response.data.token, user: response.data.user });
+
+            navigate("/"); // Rediriger après connexion
+        } catch (err) {
+            setError(err.response?.data?.message || "Login failed");
+        }
+    };
 
     return (
-        <Formik
-            initialValues={{
-                email: '',
-                password: ''
-            }}
-            validationSchema={Yup.object({
-                email: Yup.string().email().max(30, 'Must be 20 characters or less').required('Required'),
-                password: Yup.string().max(30, 'Must be 20 characters or less').required('Required')
-            })}
-            onSubmit={async (values) => {
-                try {
-                    const response = await fetch(
-                        'https://node-project-u3nz.onrender.com/api/auth/login',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(values),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }
-                    );
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    const { user } = await response.json();
-                    const { username, email, token } = user;
-                    login({
-                        user: {
-                            username,
-                            email
-                        },
-                        token
-                    });
-                    toast.success('Vous etes connectés !');
-                    navigate('/welcome');
-                } catch (error) {
-                    console.error('Failed to register:', error);
-                    toast.error('Echec de la connexion !');
-                }
-            }}
-        >
-            {({ isSubmitting }) => (
-                <Form>
-                    <div className="form-group">
-                        <label htmlFor="email">Email:</label>
-                        <Field className="form-control" type="email" name="email" />
-                        <ErrorMessage style={{ color: 'red' }} name="email" component="div" />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password:</label>
-                        <Field className="form-control" type="password" name="password" />
-                        <ErrorMessage style={{ color: 'red' }} name="password" component="div" />
-                    </div>
-                    <button className="btn btn-primary mt-3" type="submit" disabled={isSubmitting}>
-                        Submit
-                    </button>
-                </Form>
-            )}
-        </Formik>
+        <div className="flex justify-center items-center h-screen bg-gray-100">
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white shadow-lg rounded-lg p-8 w-96"
+            >
+                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="border rounded-lg px-4 py-2 w-full"
+                    />
+                </div>
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="border rounded-lg px-4 py-2 w-full"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    className="bg-blue-600 text-white py-2 px-4 rounded-lg w-full"
+                >
+                    Login
+                </button>
+                <p className="text-sm text-gray-600 mt-4 text-center">
+                    Dont have an account?{" "}
+                    <a href="/register" className="text-blue-500">
+                        Sign Up
+                    </a>
+                </p>
+            </form>
+        </div>
     );
-}
+};
 
-export default Login;
+export default LoginPage;

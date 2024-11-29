@@ -5,7 +5,7 @@ import {StrictMode} from "react";
 import {BrowserRouter} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {AuthProvider} from "./context/AuthContext.jsx";
-import CustomNavbar from "./components/Navbar.jsx";
+
 
 
 createRoot(document.getElementById('root')).render(
